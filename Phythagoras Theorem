@@ -1,0 +1,252 @@
+.data
+prompt:         .asciiz         "_____________DETECTION OF RIGHT ANGLE TRIANGLE USINMG PYTHAGORUS THEOREM______________\n\n"
+enterNum1:	.asciiz		"Enter Value for Side A: "
+enterNum2:	.asciiz		"Enter Value for Side B: "
+enterNum3:	.asciiz		"Enter Value for Side C: "
+right_tri:	.asciiz		" - is a Right Triangle\n"
+not_right:	.asciiz		" - is not a Right Triangle\n"
+nl:		.asciiz		"\n"
+comma:		.asciiz		", "
+
+.text
+
+.globl main
+
+main:
+li $v0,4
+la $a0,prompt
+syscall
+jal allwork		
+	
+li $v0, 10		
+syscall
+	
+allwork:
+sw $ra, ($sp)		
+jal input     		
+jal check		
+jal print		
+	
+input:
+addi $sp, $sp, -16	
+sw $ra, ($sp)		
+addi $sp, $sp, 16	
+
+li $t4, 1		
+li $t5, 2		
+li $t6, 3		
+li $s6, 0		
+	
+first_num:
+		
+la $a0, enterNum1	
+li $v0, 4		
+syscall
+	
+li $v0, 5		
+syscall
+	
+move $t0, $v0		
+move $s3, $v0		
+
+move $t7, $t0		
+move $t9, $t0		
+
+addi $sp, $sp, -4	
+sw $v0, ($sp)		
+		
+jal pow			
+	
+second_num:
+
+move $s0, $t7			
+
+la $a0, enterNum2	
+li $v0, 4		
+syscall
+		
+li $v0, 5		
+syscall
+	
+move $t1, $v0		
+move $s4, $v0		
+	
+move $t7, $t1		
+move $t9, $t1		
+
+addi $sp, $sp, -4	
+sw $v0, ($sp)		
+
+jal pow			
+
+last_num:
+
+move $s1, $t7		
+	
+la $a0, enterNum3	
+li $v0, 4		
+syscall
+
+li $v0, 5		
+syscall
+	
+move $t2, $v0		
+move $s5, $v0		
+
+move $t7, $t2		
+move $t9, $t2		
+
+addi $sp, $sp, -4	
+sw $v0, ($sp)		
+	
+jal pow			
+
+move $s2, $t7			
+
+addi $sp, $sp, -4		
+lw $ra, ($sp)			
+addi $sp, $sp, 4		
+
+jr $ra				
+
+pow:
+
+set:
+li $t3, 1		
+li $t8, 2		
+li $s6, 0		
+
+j loop				
+		
+get_num:
+addi $t4, $t4, 1		
+	
+jr $ra				
+
+loop:
+addi $t3, $t3, 1		
+	
+mult $t7, $t9			
+mflo $t7			
+		
+beq $t3, $t8, get_num		
+	
+j loop				
+
+check:
+beqz $s6, set_to_a			
+bgt $t0, $t2, swap_a_c			
+bgt $t1, $t2, swap_b_c			
+
+jr $ra					
+
+swap_a_c:
+lw $t0, ($sp)			
+addi $sp, $sp, -8		
+	
+lw $t2, ($sp)			
+sw $t0, ($sp)			
+	
+addi $sp, $sp, 8		
+sw $t2, ($sp)			
+		
+move $t0, $t2			
+move $t2, $s3			
+
+move $s7, $s0			
+move $s0, $s2			
+move $s2, $s7			
+
+j check				
+		
+swap_b_c:
+addi $sp, $sp, -4		
+lw $t1, ($sp)			
+		
+addi $sp, $sp, -4		
+lw $t2, ($sp)			
+		
+sw $t1, ($sp)			
+addi $sp, $sp, 4		
+sw $t2, ($sp)			
+addi $sp, $sp, 4		
+
+move $t1, $t2			
+move $t2, $s4			
+		
+move $s7, $s1			
+move $s1, $s2			
+move $s2, $s7			
+		
+j check				
+	
+set_to_a:
+li $s6, 1			
+addi $sp, $sp, 8
+				
+j check				
+
+print:	
+add $s7, $s0, $s1	
+beq $s7, $s2, right	
+
+move $a0, $s3		
+li $v0, 1		
+syscall	
+		
+la $a0, comma		
+li $v0, 4		
+syscall
+	
+move $a0, $s4		
+li $v0, 1		
+syscall
+	
+la $a0, comma		
+li $v0, 4		
+syscall
+	
+move $a0, $s5		
+li $v0, 1		
+syscall
+		
+la $a0, not_right	
+li $v0, 4		
+syscall
+
+addi $sp, $sp, 4	
+lw $ra, ($sp)		
+
+jr $ra			# Return to main and exit the program
+	
+right:
+move $a0, $s3		
+li $v0, 1		
+syscall	
+			
+la $a0, comma		
+li $v0, 4		
+syscall
+	
+move $a0, $s4		
+li $v0, 1		
+syscall
+	
+la $a0, comma		
+li $v0, 4		
+syscall
+	
+move $a0, $s5		
+li $v0, 1		
+syscall
+	
+la $a0, right_tri	
+li $v0, 4		
+syscall
+			
+addi $sp, $sp, 4	
+lw $ra, ($sp)		
+			
+jr $ra			# Return to main and exit the program
+
+
